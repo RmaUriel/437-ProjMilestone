@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Group Creation</title>
+    <link rel="stylesheet" href="../css/Create-Group.css">
+</head>
+
+<body>
+
+<header>
+    <nav class="navbar">
+        <ul>
+            <li><a href=" Homepage.html">Home</a></li>
+            <li> <a href="Profile.html"> Profile </a></li>
+            <li> <a href="Search.html"> Search </a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <h1> Group Creation Form</h1>
+    <p>
+        Fill out the details below to create your new group
+    </p>
+    <section class="group-information">
+        <form>
+
+            <label for="groupName">Group Name </label>
+            <input type="text" id="groupName" name="groupName" placeholder="Group Name" required>
+
+            <label for="major"> Major </label>
+            <select id="major" name="major" required>
+                <option value="computer-science"> Computer Science</option>
+                <option value="history">History</option>
+                <option value="math">Math</option>
+                <option value="physics">Physics</option>
+                <option value="chemistry">Chemistry</option>
+                <option value="biology">Biology</option>
+            </select>
+
+            <label for="class-instructor"> Class Instructor </label>
+            <input type="text" id="class-instructor" name="class-instructor" placeholder="Class Instructor" required>
+
+            <label for="course-number"> Course Number</label>
+            <input type="tel" id="course-number" name="course-number" placeholder="Course Number" required>
+
+            <label for="group-size"> Group Size </label>
+            <select id="group-size" name="group-size" required>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+            </select>
+
+            <button type="submit">Create Group</button>
+
+        </form>
+    </section>
+</main>
+
+<footer>
+    <p> &copy; Study Group Finder UHV</p>
+</footer>
+
+</body>
+</html>

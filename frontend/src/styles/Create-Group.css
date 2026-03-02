@@ -1,0 +1,75 @@
+body{
+    background-color: rgb(242, 244, 255);
+}
+
+
+footer{
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    background-color: rgb(74, 99, 243);
+    color: white;
+}
+
+button{
+    display: block;
+    margin: 1rem auto;
+    padding: .5rem .5rem;
+    background-color: rgb(74,99, 243);
+    color: white;
+    cursor: pointer;
+}
+label {
+    font-weight: 600;
+    margin-top: 0.5rem;
+}
+
+input, select {
+    padding: 0.5rem;
+    font-size: 1rem;
+}
+
+
+.navbar {
+    background-color: rgb(74, 99, 243);
+    padding: 1rem 1rem;
+}
+
+.navbar a {
+    color: white;
+}
+.navbar ul{
+    display: flex;
+    margin:0;
+    padding: 0;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 1rem;
+    list-style-type: none;
+}
+
+.group-information form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+@media (max-width: 600px) {
+
+    .navbar ul {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-start;
+    }
+    button {
+        width: 50%;
+        max-width: 300px;
+        margin: 0 auto;
+    }
+
+    input, select {
+        width: 100%;
+        font-size: 1rem;
+    }
+}

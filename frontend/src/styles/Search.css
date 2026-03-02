@@ -1,0 +1,86 @@
+header,
+nav,
+main,
+section,
+footer {
+    outline: 1px solid blue;
+}
+
+
+body{
+    background-color: rgb(242, 244, 255);
+}
+
+
+footer{
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    background-color: rgb(74, 99, 243);
+    color: white;
+}
+
+.navbar {
+    background-color: rgb(74, 99, 243);
+    padding: 1rem 1rem;
+}
+
+.navbar a {
+    color: white;
+}
+.navbar ul{
+    display: flex;
+    margin:0;
+    padding: 0;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 1rem;
+    list-style-type: none;
+
+}
+
+.group-table{
+    max-width: 100%;
+    width: 100%;
+    overflow-x: auto;
+}
+
+.class-group-table{
+    outline: 1px solid green;
+    width:100%;
+    max-width: 50rem;
+    margin: 1rem auto;
+    border-collapse: collapse;
+}
+
+.class-group-table th{
+    outline: 1px solid purple;
+    padding: .5rem .5rem;
+}
+
+.class-group-table td{
+    outline: 1px solid red;
+    text-align: center;
+    padding: .5rem .5rem;
+    overflow-wrap: break-word;
+}
+
+
+@media (max-width: 600px) {
+    .navbar ul {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-start;
+    }
+    .class-group-table {
+        table-layout: fixed;
+        font-size: 0.9rem;
+    }
+
+    .class-group-table th,
+    .class-group-table td {
+        padding: 0.4rem;
+        text-align: left;
+    }
+}

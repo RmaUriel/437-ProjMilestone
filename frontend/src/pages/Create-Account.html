@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title> Create Account</title>
+    <link rel="stylesheet" href="../css/Create-Account.css">
+</head>
+<body>
+
+<header>
+    <nav class="navbar">
+        <ul>
+            <li><a href=" Homepage.html">Home</a></li>
+            <li> <a href="Profile.html"> Profile </a></li>
+            <li> <a href="Search.html"> Search </a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <h1> Welcome </h1>
+    <p>
+        Thank you for deciding to create a new account.
+        Please fill out the following information.
+    </p>
+
+    <section class="info-input">
+        <form>
+            <label for="firstName"> First Name: </label>
+            <input type="text" id="firstName" name="firstName" placeholder="First Name" required>
+
+            <label for="lastName"> Last Name: </label>
+            <input type="text" id="lastName" name="lastName" placeholder="Last Name" required>
+
+            <label for="gender"> Gender </label>
+            <select id="gender" name="gender" required>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="non-binary">Non-Binary</option>
+                <option value="prefer-not-to-say">Prefer not to say</option>
+            </select>
+
+            <label for="pronouns"> Pronouns </label>
+            <select id="pronouns" name="pronouns" required>
+                <option value="she/her">She / Her</option>
+                <option value="he/him">He / Him</option>
+                <option value="they/them">They / Them</option>
+                <option value="prefer-not-to-say">Prefer not to say</option>
+                <option value="other">Other</option>
+            </select>
+
+            <label for="email"> Email: </label>
+            <input type="email" id="email" name="email" placeholder="Email" required>
+
+            <label for="password"> Password: </label>
+            <input type="password" id="password" name="password" placeholder="Password" required>
+
+            <label for="phoneNumber"> Phone Number: </label>
+            <input type="tel" id="phoneNumber" name="phoneNumber"
+                   pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="123-456-7890"
+                   title="Phone number must be in the format 123-456-7890" required>
+
+
+            <label for="major"> Major </label>
+            <select id="major" name="major" required>
+                <option value="computer-science"> Computer Science</option>
+                <option value="history">History</option>
+                <option value="math">Math</option>
+                <option value="physics">Physics</option>
+                <option value="chemistry">Chemistry</option>
+                <option value="biology">Biology</option>
+            </select>
+
+
+            <label for="year"> Year </label>
+            <select id="year" name="year" required>
+                <option value="first">First</option>
+                <option value="second">Second</option>
+                <option value="third">Third</option>
+                <option value="fourth">Fourth</option>
+                <option value="fifth">Fifth</option>
+                <option value="transfer-1">Transfer 1st </option>
+                <option value="transfer-2">Transfer 2nd </option>
+                <option value="transfer-3">Transfer 3rd </option>
+            </select>
+
+            <label for="bio"> Bio </label>
+            <textarea id="bio" name="bio" placeholder="Bio" rows=4 required></textarea>
+
+            <fieldset>
+                <legend>Classes</legend>
+
+                <label>
+                    <input type="checkbox" name="classes[]" value="CSC101">
+                    CSC 101
+                </label>
+
+                <label>
+                    <input type="checkbox" name="classes[]" value="CSC202">
+                    CSC 202
+                </label>
+
+                <label>
+                    <input type="checkbox" name="classes[]" value="CSC203">
+                    CSC 203
+                </label>
+            </fieldset>
+
+            <button type="submit">Create Account</button>
+
+        </form>
+    </section>
+
+</main>
+
+<footer>
+    <p> &copy; Study Group Finder UHV</p>
+</footer>
+</body>
+</html>
