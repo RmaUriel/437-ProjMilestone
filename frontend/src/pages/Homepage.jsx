@@ -28,11 +28,7 @@ export default function HomePage() {
                     Create Account
                 </button>
 
-                {/* Temporary links (optional) — you can delete once your button UX is enough */}
-                <div style={{ marginTop: 12, display: "flex", gap: 12, flexWrap: "wrap" }}>
-                    <Link to="/create-account">Account</Link>
 
-                </div>
             </main>
 
             <footer>
