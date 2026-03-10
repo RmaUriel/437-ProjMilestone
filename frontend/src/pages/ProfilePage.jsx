@@ -59,7 +59,7 @@ export default function ProfilePage({
         <>
             <header>
                 {/* YOUR PHOTO HERE */}
-                <img
+               <img
                     className="profile-pic"
                     src={user.photo}
                     alt={`${user.name}'s profile`}
