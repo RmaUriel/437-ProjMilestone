@@ -1,7 +1,18 @@
+export const AUTH_TOKEN_KEY = "study-group-auth-token";
+export const SESSION_KEY = "study-group-current-user";
+
+function getAuthToken() {
+    return localStorage.getItem(AUTH_TOKEN_KEY) || "";
+}
+
+
 async function request(path, options = {}) {
+    const token = getAuthToken();
+
     const response = await fetch(path, {
         headers: {
             ...(options.body instanceof FormData ? {} : { "Content-Type": "application/json" }),
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
             ...(options.headers || {}),
         },
         ...options,
@@ -9,7 +20,7 @@ async function request(path, options = {}) {
 
     const data = await response.json().catch(() => ({}));
     if (!response.ok) {
-        throw new Error(data.error || "Request failed.");
+        throw new Error(data.message || data.error || "Request failed.");
     }
     return data;
 }

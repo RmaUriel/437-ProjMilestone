@@ -7,10 +7,7 @@ import ProfilePage from "./pages/ProfilePage.jsx";
 import SearchPage from "./pages/SearchPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import CreateGroupPage from "./pages/CreateGroupPage.jsx";
-import { api } from "./api.js";
-
-const SESSION_KEY = "study-group-current-user";
-
+import { api, AUTH_TOKEN_KEY, SESSION_KEY } from "./api.js";
 
 export default function App() {
 
@@ -34,12 +31,22 @@ export default function App() {
         async function initializeApp() {
             try {
                 const username = localStorage.getItem(SESSION_KEY);
+                const token = localStorage.getItem(AUTH_TOKEN_KEY);
+
                 await refreshGroups();
-                if (username) {
+
+                if (username && token) {
                     await refreshUser(username);
+                } else {
+                    localStorage.removeItem(SESSION_KEY);
+                    localStorage.removeItem(AUTH_TOKEN_KEY);
+                    setUser(null);
                 }
             } catch (err) {
                 setGlobalError(err.message);
+                localStorage.removeItem(SESSION_KEY);
+                localStorage.removeItem(AUTH_TOKEN_KEY);
+                setUser(null);
             } finally {
                 setLoading(false);
             }
@@ -63,6 +70,7 @@ export default function App() {
         setGlobalError("");
         const data = await api.register(formData);
         localStorage.setItem(SESSION_KEY, data.user.username);
+        localStorage.setItem(AUTH_TOKEN_KEY, data.token);
         setUser(data.user);
         await refreshGroups();
     }
@@ -71,6 +79,8 @@ export default function App() {
         setGlobalError("");
         const data = await api.login(credentials);
         localStorage.setItem(SESSION_KEY, data.user.username);
+        localStorage.setItem(AUTH_TOKEN_KEY, data.token);
+
         setUser(data.user);
         await refreshGroups();
     }
@@ -100,48 +110,61 @@ export default function App() {
     }
 
     async function createGroup(payload) {
-        if (!user) return;
+        if (!user) {
+            return;
+        }
         setGlobalError("");
-        const data = await api.createGroup({
-            ...payload,
-            creatorUsername: user.username,
-        });
+        const data = await api.createGroup(payload);
         setGroups(data.groups || []);
     }
 
     async function joinGroup(groupId) {
         if (!user) {
+            setGlobalError("Please log in first.");
             return;
         }
-        setGlobalError("");
-        const data = await api.joinGroup(groupId, user.username);
-        setGroups(data.groups || []);
+
+        try {
+            setGlobalError("");
+            const data = await api.joinGroup(groupId);
+            setGroups(data.groups || []);
+        } catch (err) {
+            setGlobalError(err.message);
+        }
     }
 
     async function leaveGroup(groupId) {
         if (!user) {
+            setGlobalError("Please log in first.");
             return;
         }
-        setGlobalError("");
-        const data = await api.leaveGroup(groupId, user.username);
-        setGroups(data.groups || []);
+        try {
+            setGlobalError("");
+            const data = await api.leaveGroup(groupId);
+            setGroups(data.groups || []);
+        } catch (err) {
+            setGlobalError(err.message);
+        }
     }
 
     async function updateGroup(groupId, updates) {
         if (!user) {
+            setGlobalError("Only owner can update group.");
             return;
         }
-        setGlobalError("");
-        const data = await api.updateGroup(groupId, {
-            ...updates,
-            username: user.username,
-        });
-        setGroups(data.groups || []);
+        try {
+            setGlobalError("");
+            const data = await api.updateGroup(groupId, updates);
+            setGroups(data.groups || []);
+        } catch (err) {
+            setGlobalError(err.message);
+        }
     }
 
 
     function logout() {
         localStorage.removeItem(SESSION_KEY)
+        localStorage.removeItem(AUTH_TOKEN_KEY);
         setUser(null);
     }
 

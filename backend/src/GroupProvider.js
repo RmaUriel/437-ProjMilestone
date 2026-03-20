@@ -153,27 +153,46 @@ export class GroupProvider {
 
     async joinGroup(groupId, username) {
         const objectId = new ObjectId(groupId);
+        const cleanUsername = String(username || "").trim();
+
+        if (!cleanUsername) {
+            throw new Error("A valid authenticated user is required.");
+        }
+
+        const joinResult = await this.groups.updateOne(
+            {
+                _id: objectId,
+                members: { $ne: cleanUsername },
+                $expr: { $lt: [{ $size: "$members" }, MAX_GROUP_SIZE] },
+            },
+            {
+                $addToSet: { members: cleanUsername },
+            }
+        );
+
+        if (joinResult.modifiedCount === 1) {
+            return this.getAllGroups();
+        }
+
         const group = await this.groups.findOne({ _id: objectId });
         if (!group) {
             throw new Error("Group not found.");
         }
-        if (group.members.includes(username)) {
+
+        if ((group.members || []).includes(cleanUsername)) {
             return this.getAllGroups();
         }
-        if (group.members.length >= MAX_GROUP_SIZE) {
+
+        if ((group.members || []).length >= MAX_GROUP_SIZE) {
             throw new Error("This group already has 10 students.");
         }
 
-        await this.groups.updateOne(
-            { _id: objectId },
-            { $addToSet: { members: username } }
-        );
-
-        return this.getAllGroups();
+        throw new Error("Unable to join group.");
     }
 
     async leaveGroup(groupId, username) {
         const objectId = new ObjectId(groupId);
+        const cleanUsername = String(username || "").trim();
         const group = await this.groups.findOne({ _id: objectId });
         if (!group) {
             throw new Error("Group not found.");
@@ -181,13 +200,30 @@ export class GroupProvider {
 
         await this.groups.updateOne(
             { _id: objectId },
-            { $pull: { members: username } }
+            { $pull: { members: cleanUsername } }
         );
 
 
         const updatedGroup = await this.groups.findOne({ _id: objectId });
-        if (updatedGroup && (updatedGroup.members || []).length === 0) {
+        if (!updatedGroup) {
+            return this.getAllGroups();
+        }
+
+        const remainingMembers = updatedGroup.members || [];
+
+        if (remainingMembers.length === 0) {
             await this.groups.deleteOne({ _id: objectId });
+            return this.getAllGroups();
+        }
+
+        const creatorLeft =
+            String(updatedGroup.createdBy || "").trim().toLowerCase() === cleanUsername.toLowerCase();
+
+        if (creatorLeft) {
+            await this.groups.updateOne(
+                { _id: objectId },
+                { $set: { createdBy: remainingMembers[0] } }
+            );
         }
 
         return this.getAllGroups();

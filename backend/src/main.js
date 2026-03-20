@@ -1,3 +1,4 @@
+// backend/src/main.js
 import express from "express";
 import fs from "fs";
 import path from "path";
@@ -10,6 +11,8 @@ import { ClassProvider } from "./ClassProvider.js";
 import { GroupProvider } from "./GroupProvider.js";
 import { UserProvider } from "./UserProvider.js";
 import { imageMiddlewareFactory, handleImageFileErrors } from "./imageUploadMiddleware.js";
+import { registerAuthRoutes } from "../routes/authRoutes.js";
+import { verifyAuthToken } from "../routes/verifyAuthToken.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -38,119 +41,64 @@ app.use(express.json());
 app.use(express.static(STATIC_DIR));
 app.use("/uploads", express.static(IMAGE_UPLOAD_DIR));
 
-function normalizeClassList(classNames) {
-    const unique = new Map();
-    for (const className of classNames || []) {
-        const classRecord = ClassProvider.validateAndNormalize(className);
-        if (!unique.has(classRecord.normalizedName)) {
-            unique.set(classRecord.normalizedName, classRecord.originalName);
-        }
+/* CHANGE START: helper middleware for route protection/ownership
+   What this does:
+   - enforces that write routes require a valid JWT
+   - prevents a user from editing another user's profile by changing :username
+*/
+function requireSameUserParam(req, res, next) {
+    const routeUsername = String(req.params.username || "").trim().toLowerCase();
+    const authUsername = String(req.userInfo?.username || "").trim().toLowerCase();
+
+    if (!routeUsername || !authUsername || routeUsername !== authUsername) {
+        return res.status(403).send({ error: "You can only modify your own account." });
     }
-    return [...unique.values()];
+
+    next();
 }
+/* CHANGE END: helper middleware for route protection/ownership */
 
-app.post("/api/auth/register", async (req, res) => {
-    try {
-
-        const {
-            username,
-            firstName,
-            lastName,
-            gender,
-            pronouns,
-            email,
-            password,
-            phoneNumber,
-            major,
-            year,
-            bio,
-            classes,
-        } = req.body;
-
-        if (!username || !firstName || !lastName || !email || !password) {
-            res.status(400).send({ error: "Missing required fields." });
-            return;
-        }
-
-        const normalizedClasses = normalizeClassList(classes);
-        for (const className of normalizedClasses) {
-            await classProvider.createClassIfNeeded(className);
-        }
-
-        const user = await credentialsProvider.registerUser({
-            username: String(username).trim(),
-            firstName: String(firstName).trim(),
-            lastName: String(lastName).trim(),
-            gender: String(gender || "").trim(),
-            pronouns: String(pronouns || "").trim(),
-            email: String(email).trim(),
-            password: String(password),
-            phoneNumber: String(phoneNumber || "").trim(),
-            major: String(major || "").trim(),
-            year: String(year || "").trim(),
-            bio: String(bio || "").trim(),
-            classes: normalizedClasses,
-        });
-
-        res.status(201).send({ user });
-
-    } catch (err) {
-        res.status(400).send({ error: err.message });
-    }
-});
-
-app.post("/api/auth/login", async (req, res) => {
-    try {
-
-        const { username, password } = req.body;
-        const isValid = await credentialsProvider.verifyPassword(String(username || "").trim(), String(password || ""));
-        if (!isValid) {
-            res.status(401).send({ error: "Invalid username or password." });
-            return;
-        }
-
-        const user = await userProvider.getUserByUsername(String(username || "").trim());
-        res.send({ user });
-
-    } catch (err) {
-        res.status(500).send({ error: err.message });
-    }
-});
+/* CHANGE START: actually register the auth routes instead of leaving dead code
+   What this does:
+   - removes the disconnected auth implementation from main.js
+   - uses the fixed routes in backend/routes/authRoutes.js
+*/
+registerAuthRoutes(app, credentialsProvider, classProvider, userProvider);
+/* CHANGE END: actually register the auth routes instead of leaving dead code */
 
 app.get("/api/users/:username", async (req, res) => {
     try {
-
         const user = await userProvider.getUserByUsername(req.params.username);
         if (!user) {
             res.status(404).send({ error: "User not found." });
             return;
         }
         res.send({ user });
-
     } catch (err) {
         res.status(500).send({ error: err.message });
     }
 });
 
-app.put("/api/users/:username", async (req, res) => {
+/* CHANGE START: protect all profile mutation routes
+   What this does:
+   - requires JWT auth
+   - ensures the token user matches the :username being modified
+*/
+app.put("/api/users/:username", verifyAuthToken, requireSameUserParam, async (req, res) => {
     try {
-
         const user = await userProvider.updateProfile(req.params.username, req.body || {});
         res.send({ user });
-
     } catch (err) {
         res.status(400).send({ error: err.message });
     }
 });
 
-app.post("/api/users/:username/classes", async (req, res) => {
+app.post("/api/users/:username/classes", verifyAuthToken, requireSameUserParam, async (req, res) => {
     try {
-
         const { className } = req.body;
         await classProvider.createClassIfNeeded(className);
         const user = await userProvider.addClassToUser(req.params.username, className);
         res.send({ user });
-
     } catch (err) {
         res.status(400).send({ error: err.message });
     }
@@ -158,24 +106,26 @@ app.post("/api/users/:username/classes", async (req, res) => {
 
 app.post(
     "/api/users/:username/profile-image",
+    verifyAuthToken,
+    requireSameUserParam,
     imageMiddlewareFactory.single("profileImage"),
     async (req, res) => {
         try {
-
             if (!req.file) {
                 res.status(400).send({ error: "Please upload a profile image." });
                 return;
             }
+
             const profileImageUrl = `/uploads/${req.file.filename}`;
             const user = await userProvider.setProfileImage(req.params.username, profileImageUrl);
             res.send({ user });
-
         } catch (err) {
             res.status(500).send({ error: err.message });
         }
     },
     handleImageFileErrors
 );
+/* CHANGE END: protect all profile mutation routes */
 
 app.get("/api/classes", async (req, res) => {
     try {
@@ -188,52 +138,61 @@ app.get("/api/classes", async (req, res) => {
 
 app.get("/api/groups", async (req, res) => {
     try {
-
         const groups = await groupProvider.getAllGroups();
         res.send({ groups });
-
     } catch (err) {
         res.status(500).send({ error: err.message });
     }
 });
 
-app.post("/api/groups", async (req, res) => {
+/* CHANGE START: protect all group mutation routes and trust the token user only
+   What this does:
+   - stops impersonation through req.body.username / creatorUsername
+   - makes create/update/join/leave all use the authenticated user from the JWT
+*/
+app.post("/api/groups", verifyAuthToken, async (req, res) => {
     try {
-
-        const groups = await groupProvider.createGroup(req.body);
+        const groups = await groupProvider.createGroup({
+            ...req.body,
+            creatorUsername: req.userInfo.username,
+        });
         res.status(201).send({ groups });
-
     } catch (err) {
         res.status(400).send({ error: err.message });
     }
 });
 
-app.put("/api/groups/:groupId", async (req, res) => {
+app.put("/api/groups/:groupId", verifyAuthToken, async (req, res) => {
     try {
-        const groups = await groupProvider.updateGroup(req.params.groupId, req.body.username, req.body);
+        const groups = await groupProvider.updateGroup(
+            req.params.groupId,
+            req.userInfo.username,
+            req.body || {}
+        );
         res.send({ groups });
     } catch (err) {
         res.status(400).send({ error: err.message });
     }
 });
 
-app.post("/api/groups/:groupId/join", async (req, res) => {
+app.post("/api/groups/:groupId/join", verifyAuthToken, async (req, res) => {
     try {
-        const groups = await groupProvider.joinGroup(req.params.groupId, req.body.username);
+        const groups = await groupProvider.joinGroup(req.params.groupId, req.userInfo.username);
         res.send({ groups });
     } catch (err) {
         res.status(400).send({ error: err.message });
     }
 });
 
-app.post("/api/groups/:groupId/leave", async (req, res) => {
+app.post("/api/groups/:groupId/leave", verifyAuthToken, async (req, res) => {
     try {
-        const groups = await groupProvider.leaveGroup(req.params.groupId, req.body.username);
+        const groups = await groupProvider.leaveGroup(req.params.groupId, req.userInfo.username);
         res.send({ groups });
     } catch (err) {
         res.status(400).send({ error: err.message });
     }
 });
+/* CHANGE END: protect all group mutation routes and trust the token user only */
 
 app.get(Object.values(VALID_ROUTES), (req, res) => {
     res.sendFile("index.html", { root: STATIC_DIR });

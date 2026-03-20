@@ -43,7 +43,7 @@ export default function SearchPage({ user, groups = [], onJoinGroup, onLeaveGrou
     }, [groups, searchText]);
 
     function startEditingGroup(group) {
-        setEditingGroupId(group._id);
+        setEditingGroupId(group.id);
         setEditError("");
         setEditForm({
             className: group.className || "",
@@ -110,11 +110,11 @@ export default function SearchPage({ user, groups = [], onJoinGroup, onLeaveGrou
                                     <tbody>
                                     {filteredGroups.map((group) => {
                                         const alreadyJoined = !!(user && (group.members || []).includes(user.username));
-                                        const isExpanded = expandedGroupId === group._id;
+                                        const isExpanded = expandedGroupId === group.id;
                                         const canEdit = !!user && String(group.createdBy || "").toLowerCase() === String(user.username || "").toLowerCase();
-                                        const isEditing = editingGroupId === group._id;
+                                        const isEditing = editingGroupId === group.id;
                                         return (
-                                            <Fragment key={group._id}>
+                                            <Fragment key={group.id}>
                                             <tr>
                                                 <td data-label="Class">{group.className}</td>
                                                 <td data-label="Group">{group.groupName}</td>
@@ -122,20 +122,20 @@ export default function SearchPage({ user, groups = [], onJoinGroup, onLeaveGrou
                                                 <td data-label="Description">{group.groupBio || "No description"}</td>
                                                 <td data-label="Members">{group.memberCount}/10</td>
                                                 <td data-label="Profiles">
-                                                    <button type="button" className="btn" onClick={() => setExpandedGroupId(isExpanded ? "" : group._id)}>
+                                                    <button type="button" className="btn" onClick={() => setExpandedGroupId(isExpanded ? "" : group.id)}>
                                                         {isExpanded ? "Hide" : "View"}
                                                     </button>
                                                 </td>
 
                                                 <td data-label="Action">
                                                     {alreadyJoined ? (
-                                                        <button className="btn" onClick={() => onLeaveGroup(group._id)}>
+                                                        <button className="btn" onClick={() => onLeaveGroup(group.id)}>
                                                             Leave
                                                         </button>
                                                     ) : (
                                                         <button
                                                             className="btn"
-                                                            onClick={() => onJoinGroup(group._id)}
+                                                            onClick={() => onJoinGroup(group.id)}
                                                             disabled={!user || group.memberCount >= 10}
                                                             title={
                                                                 !user
@@ -180,13 +180,13 @@ export default function SearchPage({ user, groups = [], onJoinGroup, onLeaveGrou
                                                                 )}
                                                                 {canEdit ? (
                                                                     <div className="group-edit-panel">
-                                                                        {/* CHANGE START: simplify edit actions by removing Load Current Values and adding Cancel on the left. */}
+
                                                                         <strong>Edit Group</strong>
                                                                         <p style={{ marginTop: 8 }}>As the creator, you can update this group.</p>
 
-                                                                        <label htmlFor={`className-${group._id}`}>Class</label>
+                                                                        <label htmlFor={`className-${group.id}`}>Class</label>
                                                                         <input
-                                                                            id={`className-${group._id}`}
+                                                                            id={`className-${group.id}`}
                                                                             value={isEditing ? editForm.className : group.className}
                                                                             onFocus={() => {
                                                                                 if (!isEditing) {
@@ -198,9 +198,9 @@ export default function SearchPage({ user, groups = [], onJoinGroup, onLeaveGrou
                                                                             }
                                                                         />
 
-                                                                        <label htmlFor={`groupName-${group._id}`}>Group Name</label>
+                                                                        <label htmlFor={`groupName-${group.id}`}>Group Name</label>
                                                                         <input
-                                                                            id={`groupName-${group._id}`}
+                                                                            id={`groupName-${group.id}`}
                                                                             value={isEditing ? editForm.groupName : group.groupName}
                                                                             onFocus={() => {
                                                                                 if (!isEditing) {
@@ -212,9 +212,9 @@ export default function SearchPage({ user, groups = [], onJoinGroup, onLeaveGrou
                                                                             }
                                                                         />
 
-                                                                        <label htmlFor={`meeting-${group._id}`}>Meeting</label>
+                                                                        <label htmlFor={`meeting-${group.id}`}>Meeting</label>
                                                                         <input
-                                                                            id={`meeting-${group._id}`}
+                                                                            id={`meeting-${group.id}`}
                                                                             value={isEditing ? editForm.meeting : (group.meeting || "")}
                                                                             onFocus={() => {
                                                                                 if (!isEditing) {
@@ -226,9 +226,9 @@ export default function SearchPage({ user, groups = [], onJoinGroup, onLeaveGrou
                                                                             }
                                                                         />
 
-                                                                        <label htmlFor={`groupBio-${group._id}`}>Description</label>
+                                                                        <label htmlFor={`groupBio-${group.id}`}>Description</label>
                                                                         <textarea
-                                                                            id={`groupBio-${group._id}`}
+                                                                            id={`groupBio-${group.id}`}
                                                                             rows={4}
                                                                             value={isEditing ? editForm.groupBio : (group.groupBio || "")}
                                                                             onFocus={() => {
@@ -249,7 +249,6 @@ export default function SearchPage({ user, groups = [], onJoinGroup, onLeaveGrou
 
                                                                         <div
                                                                             className="group-edit-actions"
-                                                                            className="group-edit-actions"
                                                                             style={{ display: "flex", justifyContent: "space-between", marginTop: 12 }}
                                                                         >
                                                                             <button
@@ -266,7 +265,7 @@ export default function SearchPage({ user, groups = [], onJoinGroup, onLeaveGrou
                                                                             <button
                                                                                 type="button"
                                                                                 className="btn"
-                                                                                onClick={() => handleUpdateGroup(group._id)}
+                                                                                onClick={() => handleUpdateGroup(group.id)}
                                                                             >
                                                                                 Save Changes
                                                                             </button>
