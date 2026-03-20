@@ -101,6 +101,56 @@ export class GroupProvider {
         return this.getAllGroups();
     }
 
+    async updateGroup(groupId, username, updates) {
+        const objectId = new ObjectId(groupId);
+        const group = await this.groups.findOne({ _id: objectId });
+        if (!group) {
+            throw new Error("Group not found.");
+        }
+
+        if (String(group.createdBy || "").toLowerCase() !== String(username || "").trim().toLowerCase()) {
+            throw new Error("Only the group creator can update this group.");
+        }
+
+        const updateDoc = {};
+
+        if (Object.prototype.hasOwnProperty.call(updates, "className")) {
+            const { normalizedName } = ClassProvider.validateAndNormalize(updates.className);
+            const classRecord = await this.classes.findOne({ normalizedName });
+            if (!classRecord) {
+                throw new Error("Class must exist before updating a group.");
+            }
+            updateDoc.className = classRecord.name;
+            updateDoc.classNormalizedName = classRecord.normalizedName;
+        }
+
+        if (Object.prototype.hasOwnProperty.call(updates, "groupName")) {
+            const cleanGroupName = String(updates.groupName || "").trim();
+            if (!cleanGroupName) {
+                throw new Error("Group name is required.");
+            }
+            updateDoc.groupName = cleanGroupName;
+        }
+
+        if (Object.prototype.hasOwnProperty.call(updates, "meeting")) {
+            updateDoc.meeting = String(updates.meeting || "TBD").trim() || "TBD";
+        }
+
+        if (Object.prototype.hasOwnProperty.call(updates, "groupBio")) {
+            updateDoc.groupBio = String(updates.groupBio || "").trim();
+        }
+
+        await this.groups.updateOne(
+            { _id: objectId },
+            {
+                $set: updateDoc,
+            }
+        );
+
+        return this.getAllGroups();
+
+    }
+
     async joinGroup(groupId, username) {
         const objectId = new ObjectId(groupId);
         const group = await this.groups.findOne({ _id: objectId });

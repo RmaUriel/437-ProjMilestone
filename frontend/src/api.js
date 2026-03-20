@@ -59,6 +59,14 @@ export const api = {
             body: JSON.stringify(payload),
         });
     },
+
+    updateGroup(groupId, payload) {
+        return request(`/api/groups/${encodeURIComponent(groupId)}`, {
+            method: "PUT",
+            body: JSON.stringify(payload),
+        });
+    },
+
     joinGroup(groupId, username) {
         return request(`/api/groups/${groupId}/join`, {
             method: "POST",

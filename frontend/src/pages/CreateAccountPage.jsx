@@ -57,7 +57,7 @@ export default function CreateAccountPage({ onCreateAccount }) {
         }
 
         const selectedClasses = form.classesText
-            .split(" ")
+            .split(",")
             .map((value) => value.trim())
             .filter(Boolean);
 
@@ -175,7 +175,7 @@ export default function CreateAccountPage({ onCreateAccount }) {
                         placeholder="Password"
                         required
                         value={form.password}
-                        onChange={(e) => updateField("passwrod", e.target.value)}
+                        onChange={(e) => updateField("password", e.target.value)}
                         aria-describedby="password-help"
                     />
                     <div id="password-help" style={{ fontSize: 12, color: "#666" }}>

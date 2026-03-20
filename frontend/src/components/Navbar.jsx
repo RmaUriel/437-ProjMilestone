@@ -15,6 +15,10 @@ export default function Navbar({ user, theme, onToggleTheme, onLogout }) {
                         Search
                     </NavLink>
 
+                    <NavLink to="/create-account" className="navlink">
+                        Create Account
+                    </NavLink>
+
                     {user ? (
                         <NavLink to="/profile" className="navlink">
                             Profile

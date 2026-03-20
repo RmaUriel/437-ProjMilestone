@@ -208,6 +208,15 @@ app.post("/api/groups", async (req, res) => {
     }
 });
 
+app.put("/api/groups/:groupId", async (req, res) => {
+    try {
+        const groups = await groupProvider.updateGroup(req.params.groupId, req.body.username, req.body);
+        res.send({ groups });
+    } catch (err) {
+        res.status(400).send({ error: err.message });
+    }
+});
+
 app.post("/api/groups/:groupId/join", async (req, res) => {
     try {
         const groups = await groupProvider.joinGroup(req.params.groupId, req.body.username);

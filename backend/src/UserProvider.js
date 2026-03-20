@@ -13,13 +13,13 @@ export class UserProvider {
     }
 
     async ensureIndexes() {
-        await this.users.createIndex({ username: 1 }, { unique: true });
+        await this.users.createIndex({ usernameLower: 1 }, { unique: true, sparse: true });
         await this.users.createIndex({ email: 1 }, { unique: true });
     }
 
     async getUserByUsername(username) {
         return this.users.findOne(
-            { username },
+            { usernameLower: String(username || "").trim().toLowerCase() },
             {
                 projection: {
                     _id: 0,
@@ -39,7 +39,7 @@ export class UserProvider {
         }
 
         await this.users.updateOne(
-            { username },
+            { usernameLower: String(username || "").trim().toLowerCase() },
             {
                 $set: allowedUpdates,
             }
@@ -56,7 +56,7 @@ export class UserProvider {
         }
 
         await this.users.updateOne(
-            { username },
+            { usernameLower: String(username || "").trim().toLowerCase() },
             {
                 $addToSet: {
                     classes: existingClass.name,
@@ -69,7 +69,7 @@ export class UserProvider {
 
     async setProfileImage(username, profileImageUrl) {
         await this.users.updateOne(
-            { username },
+            { usernameLower: String(username || "").trim().toLowerCase() },
             {
                 $set: { profileImageUrl },
             }

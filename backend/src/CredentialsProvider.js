@@ -13,11 +13,13 @@ export class CredentialsProvider {
     }
 
     async ensureIndexes() {
-        await this.creds.createIndex({ username: 1 }, { unique: true });
+        await this.creds.createIndex({ usernameLower: 1 }, { unique: true, sparse: true });
     }
 
     async registerUser(userDoc) {
         const { username, email, password } = userDoc;
+        const cleanUsername = String(username || "").trim();
+        const normalizedUsername = cleanUsername.toLowerCase();
 
         const existingUser = await this.users.findOne({
             $or: [{ username }, { email }],
@@ -31,7 +33,8 @@ export class CredentialsProvider {
         const hashedPassword = await bcrypt.hash(password, salt);
 
         await this.creds.insertOne({
-            username,
+            username: cleanUsername,
+            usernameLower: normalizedUsername,
             password: hashedPassword,
         });
 
@@ -55,7 +58,7 @@ export class CredentialsProvider {
     }
 
     async verifyPassword(username, password) {
-        const credsRecord = await this.creds.findOne({ username });
+        const credsRecord = await this.creds.findOne({ usernameLower: String(username || "").trim().toLowerCase() });
         if (!credsRecord) {
             return false;
         }

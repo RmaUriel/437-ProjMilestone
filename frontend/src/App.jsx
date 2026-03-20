@@ -127,6 +127,18 @@ export default function App() {
         setGroups(data.groups || []);
     }
 
+    async function updateGroup(groupId, updates) {
+        if (!user) {
+            return;
+        }
+        setGlobalError("");
+        const data = await api.updateGroup(groupId, {
+            ...updates,
+            username: user.username,
+        });
+        setGroups(data.groups || []);
+    }
+
 
     function logout() {
         localStorage.removeItem(SESSION_KEY)
@@ -146,7 +158,6 @@ export default function App() {
                 <Routes>
                     <Route path="/" element={<HomePage user={user} />} />
 
-                    {/* CHANGE START: create-account and login are now separate pages. */}
                     <Route
                         path="/create-account"
                         element={<CreateAccountPage onCreateAccount={createAccount} />}
@@ -155,7 +166,6 @@ export default function App() {
                         path="/login"
                         element={<LoginPage onLogin={login} />}
                     />
-                    {/* CHANGE END */}
 
                     <Route
                         path="/profile"
