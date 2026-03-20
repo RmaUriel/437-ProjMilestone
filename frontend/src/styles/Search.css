@@ -1,6 +1,3 @@
-
-
-
 footer{
     display: flex;
     justify-content: center;
@@ -33,10 +30,18 @@ footer{
     max-width: 100%;
     width: 100%;
     overflow-x: auto;
+    color: var(--text);
+}
+
+.table-wrapper{
+    width: 100%;
+    overflow-x: auto;
 }
 
 .class-group-table{
-    border: 1px solid black;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
     width:100%;
     max-width: 50rem;
     margin: 1rem auto;
@@ -44,12 +49,16 @@ footer{
 }
 
 .class-group-table th{
-    border: 1px solid black;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
     padding: .5rem .5rem;
 }
 
 .class-group-table td{
-    border: 1px solid black;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
     text-align: center;
     padding: .5rem .5rem;
     overflow-wrap: break-word;
@@ -71,5 +80,64 @@ footer{
     .class-group-table td {
         padding: 0.4rem;
         text-align: left;
+    }
+
+    .class-group-table {
+        min-width: 0;
+        max-width: 100%;
+        border: 0;
+        font-size: 0.9rem;
+    }
+
+    .class-group-table thead {
+        display: none;
+    }
+
+    .class-group-table,
+    .class-group-table tbody,
+    .class-group-table tr,
+    .class-group-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .class-group-table tr {
+
+        border: 1px solid var(--border);
+        margin-bottom: 1rem;
+        padding: 0.75rem;
+        background: var(--card);
+        color: var(--text);
+
+    }
+
+    .class-group-table th,
+    .class-group-table td {
+        padding: 0.4rem;
+        text-align: left;
+    }
+
+    .class-group-table td {
+        border: none;
+        background: transparent;
+        color: var(--text);
+    }
+
+    .class-group-table td::before {
+        content: attr(data-label);
+        display: block;
+        font-weight: bold;
+        margin-bottom: 0.25rem;
+        color: var(--text);
+    }
+
+    .class-group-table td[colspan]::before {
+        content: "";
+        display: none;
+    }
+
+    .class-group-table .btn {
+        width: 100%;
+        margin-top: 0.35rem;
     }
 }
