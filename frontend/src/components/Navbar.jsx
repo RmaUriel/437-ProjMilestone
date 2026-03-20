@@ -15,9 +15,17 @@ export default function Navbar({ user, theme, onToggleTheme, onLogout }) {
                         Search
                     </NavLink>
 
-                    <NavLink to="/create-account" className="navlink">
-                        Create Account
-                    </NavLink>
+                    { !user ? (
+                        <NavLink to="/create-account" className="navlink">
+                            Create Account
+                        </NavLink>
+                    ) : null }
+
+                    {!user ? (
+                        <NavLink to="/login" className="navlink">
+                            Log In
+                        </NavLink>
+                    ) : null}
 
                     {user ? (
                         <NavLink to="/profile" className="navlink">
@@ -25,11 +33,6 @@ export default function Navbar({ user, theme, onToggleTheme, onLogout }) {
                         </NavLink>
                     ) : null}
 
-                    {user ? (
-                        <NavLink to="/create-account" className="navlink">
-                            Create Account
-                        </NavLink>
-                    ) : null }
 
                     {user ? (
                         <NavLink to="/create-group" className="navlink">
@@ -37,11 +40,6 @@ export default function Navbar({ user, theme, onToggleTheme, onLogout }) {
                         </NavLink>
                     ) : null}
 
-                    {!user ? (
-                        <NavLink to="/login" className="navlink">
-                            Log In
-                        </NavLink>
-                    ) : null}
                 </nav>
 
                 <div className="navActions">

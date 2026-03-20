@@ -1,7 +1,9 @@
 export const VALID_ROUTES = {
     HOME: "/",
     LOGIN: "/login",
-    REGISTER: "/register",
+    CREATE_ACCOUNT: "/create-account",
+    PROFILE: "/profile",
     UPLOAD: "/upload",
-    IMAGE_DETAILS: "/images/:imageId"
+    CREATE_GROUP: "/create-group",
+
 };

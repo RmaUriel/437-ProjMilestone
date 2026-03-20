@@ -26,7 +26,7 @@ export default function HomePage({user}) {
                 </section>
 
                 <button type="button" onClick={() => navigate(user ? "/search" : "/create-account")}>
-                    {user ? "Browser Groups" : "Create Account"}
+                    {user ? "Browse Groups" : "Create Account"}
                 </button>
 
 

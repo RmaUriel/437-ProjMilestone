@@ -20,11 +20,12 @@ export class CredentialsProvider {
         const { username, email, password } = userDoc;
         const cleanUsername = String(username || "").trim();
         const normalizedUsername = cleanUsername.toLowerCase();
+        const cleanEmail = String(email || "").trim();
 
         const existingUser = await this.users.findOne({
-            $or: [{ username }, { email }],
+            $or: [{ usernameLower: normalizedUsername }, { email: cleanEmail }],
         });
-        const existingCred = await this.creds.findOne({ username });
+        const existingCred = await this.creds.findOne({ usernameLower: normalizedUsername });
         if (existingUser || existingCred) {
             throw new Error("A user with that username or email already exists.");
         }
@@ -39,8 +40,9 @@ export class CredentialsProvider {
         });
 
         await this.users.insertOne({
-            username,
-            email,
+            username: cleanUsername,
+            usernameLower: normalizedUsername,
+            email: cleanEmail,
             firstName: userDoc.firstName,
             lastName: userDoc.lastName,
             gender: userDoc.gender,
@@ -54,7 +56,7 @@ export class CredentialsProvider {
             createdAt: new Date(),
         });
 
-        return this.users.findOne({ username }, { projection: { _id: 0 } });
+        return this.users.findOne({ usernameLower: normalizedUsername}, { projection: { _id: 0 } });
     }
 
     async verifyPassword(username, password) {

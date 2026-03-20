@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar.jsx";
-import HomePage from "./pages/HomePage.jsx";
+import HomePage from "./pages/Homepage.jsx";
 import CreateAccountPage from "./pages/CreateAccountPage.jsx";
 import ProfilePage from "./pages/ProfilePage.jsx";
 import SearchPage from "./pages/SearchPage.jsx";
@@ -187,7 +187,14 @@ export default function App() {
 
                     <Route
                         path="/search"
-                        element={<SearchPage user={user} groups={groups} onJoinGroup={joinGroup} onLeaveGroup={leaveGroup} />}
+                        element={
+                        <SearchPage
+                            user={user}
+                            groups={groups}
+                            onJoinGroup={joinGroup}
+                            onLeaveGroup={leaveGroup}
+                            onUpdateGroup={updateGroup}
+                        />}
                     />
 
                     <Route

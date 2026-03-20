@@ -23,10 +23,6 @@ export default function CreateGroupPage({ onCreateGroup, user}) {
             setError("Please choose or enter a class.");
             return;
         }
-        if (!groupName.trim()) {
-            setError("Please provide a group name.");
-            return;
-        }
 
         try {
             await onCreateGroup({
@@ -57,6 +53,7 @@ export default function CreateGroupPage({ onCreateGroup, user}) {
                         placeholder="CSC 437"
                         required
                         value={className}
+                        list={"user-classes"}
                         onChange={(e) => setClassName(e.target.value)}
                     />
 
