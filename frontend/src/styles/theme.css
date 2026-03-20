@@ -117,14 +117,13 @@ input, textarea {
     border-radius: 8px;
 }
 
-/* Mobile sanity defaults */
 *, *::before, *::after {
     box-sizing: border-box;
 }
 
 html, body {
     max-width: 100%;
-    overflow-x: hidden; /* prevents page-level horizontal scroll */
+    overflow-x: hidden;
 }
 
 img, video, canvas {

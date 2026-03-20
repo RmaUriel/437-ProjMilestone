@@ -1,4 +1,4 @@
-// backend/src/main.js
+
 import express from "express";
 import fs from "fs";
 import path from "path";
@@ -41,11 +41,6 @@ app.use(express.json());
 app.use(express.static(STATIC_DIR));
 app.use("/uploads", express.static(IMAGE_UPLOAD_DIR));
 
-/* CHANGE START: helper middleware for route protection/ownership
-   What this does:
-   - enforces that write routes require a valid JWT
-   - prevents a user from editing another user's profile by changing :username
-*/
 function requireSameUserParam(req, res, next) {
     const routeUsername = String(req.params.username || "").trim().toLowerCase();
     const authUsername = String(req.userInfo?.username || "").trim().toLowerCase();
@@ -56,15 +51,9 @@ function requireSameUserParam(req, res, next) {
 
     next();
 }
-/* CHANGE END: helper middleware for route protection/ownership */
 
-/* CHANGE START: actually register the auth routes instead of leaving dead code
-   What this does:
-   - removes the disconnected auth implementation from main.js
-   - uses the fixed routes in backend/routes/authRoutes.js
-*/
 registerAuthRoutes(app, credentialsProvider, classProvider, userProvider);
-/* CHANGE END: actually register the auth routes instead of leaving dead code */
+
 
 app.get("/api/users/:username", async (req, res) => {
     try {
@@ -79,11 +68,6 @@ app.get("/api/users/:username", async (req, res) => {
     }
 });
 
-/* CHANGE START: protect all profile mutation routes
-   What this does:
-   - requires JWT auth
-   - ensures the token user matches the :username being modified
-*/
 app.put("/api/users/:username", verifyAuthToken, requireSameUserParam, async (req, res) => {
     try {
         const user = await userProvider.updateProfile(req.params.username, req.body || {});
@@ -145,11 +129,7 @@ app.get("/api/groups", async (req, res) => {
     }
 });
 
-/* CHANGE START: protect all group mutation routes and trust the token user only
-   What this does:
-   - stops impersonation through req.body.username / creatorUsername
-   - makes create/update/join/leave all use the authenticated user from the JWT
-*/
+
 app.post("/api/groups", verifyAuthToken, async (req, res) => {
     try {
         const groups = await groupProvider.createGroup({
@@ -192,7 +172,6 @@ app.post("/api/groups/:groupId/leave", verifyAuthToken, async (req, res) => {
         res.status(400).send({ error: err.message });
     }
 });
-/* CHANGE END: protect all group mutation routes and trust the token user only */
 
 app.get(Object.values(VALID_ROUTES), (req, res) => {
     res.sendFile("index.html", { root: STATIC_DIR });

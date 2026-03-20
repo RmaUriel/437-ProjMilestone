@@ -1,15 +1,9 @@
-// backend/routes/authRoutes.js
+
 import express from "express";
 import jwt from "jsonwebtoken";
 import { getEnvVar } from "../src/getEnvVar.js";
 import { ClassProvider } from "../src/ClassProvider.js";
 
-/* CHANGE START: centralize auth routes and return JWT + user
-   What this does:
-   - fixes the broken registerUser(...) call shape
-   - uses the same /api/auth/register and /api/auth/login endpoints the frontend already expects
-   - returns a JWT token plus the created/logged-in user
-*/
 function generateAuthToken(username) {
     return new Promise((resolve, reject) => {
         jwt.sign(
@@ -119,4 +113,3 @@ export function registerAuthRoutes(app, credentialsProvider, classProvider, user
 
     app.use("/api", router);
 }
-/* CHANGE END: centralize auth routes and return JWT + user */
