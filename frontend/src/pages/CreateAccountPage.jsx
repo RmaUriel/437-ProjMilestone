@@ -149,8 +149,8 @@ export default function CreateAccountPage({ onCreateAccount }) {
                         value={form.pronouns}
                         onChange={(e) => updateField("pronouns", e.target.value)}
                     >
-                        <option value="she/her">She / Her</option>
                         <option value="he/him">He / Him</option>
+                        <option value="she/her">She / Her</option>
                         <option value="they/them">They / Them</option>
                         <option value="prefer-not-to-say">Prefer not to say</option>
                         <option value="other">Other</option>
@@ -191,8 +191,8 @@ export default function CreateAccountPage({ onCreateAccount }) {
                         required
                         value={form.phoneNumber}
                         onChange={(e) => updateField("phoneNumber", e.target.value)}
-                        pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
-                        title="Phone number must be in the format 123-456-7890"
+                        pattern={"^(\\d{3}-\\d{3}-\\d{4}|\\d{10})$"}
+                        title="Enter 123-456-7890 or 1234567890"
                     />
 
                     <label htmlFor="major">Major</label>
