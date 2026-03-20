@@ -6,18 +6,38 @@ export default function Navbar({ user, theme, onToggleTheme, onLogout }) {
         <header className="navbar">
             <div className="navbar-inner">
                 <nav className="navlinks" aria-label="Primary">
+
                     <NavLink to="/" end className="navlink">
                         Home
                     </NavLink>
+
                     <NavLink to="/search" className="navlink">
                         Search
                     </NavLink>
-                    <NavLink to="/profile" className="navlink">
-                        Profile
-                    </NavLink>
-                    <NavLink to="/create-account" className="navlink">
-                        Create Account
-                    </NavLink>
+
+                    {user ? (
+                        <NavLink to="/profile" className="navlink">
+                            Profile
+                        </NavLink>
+                    ) : null}
+
+                    {user ? (
+                        <NavLink to="/create-account" className="navlink">
+                            Create Account
+                        </NavLink>
+                    ) : null }
+
+                    {user ? (
+                        <NavLink to="/create-group" className="navlink">
+                            Create Group
+                        </NavLink>
+                    ) : null}
+
+                    {!user ? (
+                        <NavLink to="/login" className="navlink">
+                            Log In
+                        </NavLink>
+                    ) : null}
                 </nav>
 
                 <div className="navActions">

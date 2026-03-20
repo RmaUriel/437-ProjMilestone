@@ -2,17 +2,16 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/Create-Group.css";
 
-export default function CreateGroupPage({ onCreateGroup }) {
+export default function CreateGroupPage({ onCreateGroup, user}) {
     const navigate = useNavigate();
 
     const [groupName, setGroupName] = useState("");
-    const [major, setMajor] = useState("computer-science");
-    const [instructor, setInstructor] = useState("");
-    const [courseNumber, setCourseNumber] = useState("");
-    const [groupSize, setGroupSize] = useState("4");
+    const [meeting, setMeeting] = useState("");
+    const [groupBio, setGroupBio] = useState("");
+    const [className, setClassName] = useState(user.classes?.[0] || "");
     const [error, setError] = useState("");
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault();
         setError("");
 
@@ -20,26 +19,26 @@ export default function CreateGroupPage({ onCreateGroup }) {
             setError("Please provide a group name.");
             return;
         }
-        if (!courseNumber.trim()) {
-            setError("Please provide a course number.");
+        if (!className.trim()) {
+            setError("Please choose or enter a class.");
+            return;
+        }
+        if (!groupName.trim()) {
+            setError("Please provide a group name.");
             return;
         }
 
-        const form = {
-            name: groupName.trim(),
-            classCode: courseNumber.trim(),
-            subject: major,
-            instructor: instructor.trim(),
-            meeting: "TBD",
-            capacity: Number(groupSize),
-        };
-
-        if (typeof onCreateGroup === "function") {
-            onCreateGroup(form);
+        try {
+            await onCreateGroup({
+                className,
+                groupName: groupName.trim(),
+                meeting: meeting.trim() || "TBD",
+                groupBio: groupBio.trim(),
+            });
+            navigate("/search");
+        } catch (err) {
+            setError(err.message);
         }
-
-        // after creating, navigate to search to see the group
-        navigate("/search");
     }
 
     return (
@@ -49,69 +48,46 @@ export default function CreateGroupPage({ onCreateGroup }) {
 
             <section className="group-information">
                 <form onSubmit={handleSubmit} aria-label="Create group form">
-                    <label htmlFor="groupName">Group Name</label>
+
+                    <label htmlFor="className">Class</label>
                     <input
-                        id="groupName"
-                        name="groupName"
+                        id="className"
+                        name="className"
                         type="text"
-                        placeholder="Group Name"
+                        placeholder="CSC 437"
                         required
-                        value={groupName}
-                        onChange={(e) => setGroupName(e.target.value)}
+                        value={className}
+                        onChange={(e) => setClassName(e.target.value)}
                     />
 
-                    <label htmlFor="major">Major</label>
-                    <select
-                        id="major"
-                        name="major"
-                        required
-                        value={major}
-                        onChange={(e) => setMajor(e.target.value)}
-                    >
-                        <option value="computer-science">Computer Science</option>
-                        <option value="history">History</option>
-                        <option value="math">Math</option>
-                        <option value="physics">Physics</option>
-                        <option value="chemistry">Chemistry</option>
-                        <option value="biology">Biology</option>
-                    </select>
-
-                    <label htmlFor="class-instructor">Class Instructor</label>
-                    <input
-                        id="class-instructor"
-                        name="class-instructor"
-                        type="text"
-                        placeholder="Class Instructor"
-                        required
-                        value={instructor}
-                        onChange={(e) => setInstructor(e.target.value)}
-                    />
-
-                    <label htmlFor="course-number">Course Number</label>
-                    <input
-                        id="course-number"
-                        name="course-number"
-                        type="text"
-                        placeholder="Course Number (e.g., CSC 437)"
-                        required
-                        value={courseNumber}
-                        onChange={(e) => setCourseNumber(e.target.value)}
-                    />
-
-                    <label htmlFor="group-size">Group Size</label>
-                    <select
-                        id="group-size"
-                        name="group-size"
-                        required
-                        value={groupSize}
-                        onChange={(e) => setGroupSize(e.target.value)}
-                    >
-                        {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
-                            <option key={n} value={String(n)}>
-                                {n}
-                            </option>
+                    <datalist id="user-classes">
+                        {(user.classes || []).map((course) => (
+                            <option key={course} value={course} />
                         ))}
-                    </select>
+                    </datalist>
+
+                    <label htmlFor="groupName">Group Name</label>
+                    <input id="groupName"
+                           type="text"
+                           required
+                           value={groupName}
+                           onChange={(e) => setGroupName(e.target.value)} />
+
+                    <label htmlFor="meeting">Meeting Time</label>
+                    <input id="meeting"
+                           type="text"
+                           placeholder="Mon 12pm"
+                           value={meeting}
+                           onChange={(e) => setMeeting(e.target.value)} />
+
+                    <label htmlFor="groupBio">Group Description (Optional)</label>
+                    <textarea
+                        id="groupBio"
+                        rows={4}
+                        placeholder="Share what the group is studying, how often you meet, or what kind of members you want."
+                        value={groupBio}
+                        onChange={(e) => setGroupBio(e.target.value)}
+                    />
 
                     {error && (
                         <div role="alert" style={{ color: "crimson", marginTop: 8 }}>

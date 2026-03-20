@@ -1,7 +1,7 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "../styles/Homepage.css";
 
-export default function HomePage() {
+export default function HomePage({user}) {
     const navigate = useNavigate();
 
     return (
@@ -21,11 +21,12 @@ export default function HomePage() {
                         <li>Create an account</li>
                         <li>Add your classes</li>
                         <li>Join or Create a study group</li>
+                        <li>View other student profiles inside each group</li>
                     </ol>
                 </section>
 
-                <button type="button" onClick={() => navigate("/create-account")}>
-                    Create Account
+                <button type="button" onClick={() => navigate(user ? "/search" : "/create-account")}>
+                    {user ? "Browser Groups" : "Create Account"}
                 </button>
 
 
