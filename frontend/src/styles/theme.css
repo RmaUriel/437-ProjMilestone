@@ -25,6 +25,12 @@ html, body {
     font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
+.appRoot {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+}
+
 .appMain {
     padding: 16px;
     max-width: 1000px;
@@ -35,8 +41,8 @@ html, body {
 .btn {
     padding: 8px 12px;
     border: 1px solid var(--border);
-    background: var(--card);
-    color: var(--text);
+    background: var(--primary);
+    color: #ffffff;
     border-radius: 8px;
     cursor: pointer;
 }
@@ -44,6 +50,18 @@ html, body {
 .btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+
+.dark-toggle {
+    background: #222;
+    color: #fff;
+}
+
+
+[data-theme="dark"] .dark-toggle {
+    background: #ddd;
+    color: #111;
 }
 
 .navbar {
@@ -112,6 +130,18 @@ html, body {
 img, video, canvas {
     max-width: 100%;
     height: auto;
+}
+
+[data-theme="dark"] .class-group-table,
+[data-theme="dark"] .class-group-table th,
+[data-theme="dark"] .class-group-table td {
+    border: 1px solid #ffffff;
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+    border: 1px solid #ffffff;
 }
 
 @media (max-width: 600px) {
