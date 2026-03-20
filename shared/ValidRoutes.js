@@ -5,5 +5,5 @@ export const VALID_ROUTES = {
     PROFILE: "/profile",
     UPLOAD: "/upload",
     CREATE_GROUP: "/create-group",
-
+    SEARCH: "/search",
 };

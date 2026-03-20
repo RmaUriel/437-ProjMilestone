@@ -109,7 +109,7 @@ app.post(
     },
     handleImageFileErrors
 );
-/* CHANGE END: protect all profile mutation routes */
+
 
 app.get("/api/classes", async (req, res) => {
     try {
