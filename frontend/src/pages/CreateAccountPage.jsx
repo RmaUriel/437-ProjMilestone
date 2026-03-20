@@ -28,7 +28,7 @@ export default function CreateAccountPage({ onCreateAccount }) {
     }
 
     function validatePhone(p) {
-        return /^\d{3}-\d{3}-\d{4}$/.test(p);
+        return /^(\d{3}-\d{3}-\d{4}|\d{10})$/.test(p);
     }
 
     async function handleSubmit(e) {
@@ -52,7 +52,7 @@ export default function CreateAccountPage({ onCreateAccount }) {
             return;
         }
         if (!validatePhone(form.phoneNumber)) {
-            setFormError("Phone number must be in the format 123-456-7890.");
+            setFormError("Enter 123-456-7890 or 1234567890");
             return;
         }
 
@@ -256,8 +256,8 @@ export default function CreateAccountPage({ onCreateAccount }) {
                     : null}
 
                     <div style={{ marginTop: 12 }}>
-                        <button type="submit" className="btn">
-                            Create Account
+                        <button type="submit" className="btn" disabled={submitting}>
+                            {submitting ? "Creating Account..." : "Create Account"}
                         </button>
                     </div>
                 </form>
